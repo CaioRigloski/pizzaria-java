@@ -1,13 +1,11 @@
 package pizzaria;
 
-import java.awt.Button;
-import java.awt.Choice;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -15,40 +13,37 @@ import java.math.RoundingMode;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.Locale;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.table.TableColumnModel;
+import javax.swing.text.InternationalFormatter;
 
 import com.jgoodies.forms.factories.DefaultComponentFactory;
-import com.jgoodies.forms.layout.ColumnSpec;
-import com.jgoodies.forms.layout.FormLayout;
-import com.jgoodies.forms.layout.FormSpecs;
-import com.jgoodies.forms.layout.RowSpec;
-import java.awt.Color;
 import javax.swing.JScrollPane;
-import java.awt.Window.Type;
 import javax.swing.JPanel;
 import java.awt.GridLayout;
 import java.awt.GridBagLayout;
-import javax.swing.Box;
 import java.awt.GridBagConstraints;
 import javax.swing.JButton;
 import java.awt.Insets;
-import javax.swing.JTextField;
-import java.awt.BorderLayout;
 import javax.swing.JTable;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
-import javax.swing.JTextArea;
+import javax.swing.JFormattedTextField.AbstractFormatter;
+import javax.swing.JFormattedTextField.AbstractFormatterFactory;
+
 
 public class Pizzaria extends JFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JTable table;
+	
+	// Formato para valores
+	setFormatterFactory setFormat = new setFormatterFactory();
 	
 	/**
 	 * Salva o ArrayList de Produto em um arquivo txt.
@@ -116,13 +111,13 @@ public class Pizzaria extends JFrame {
 					}
 					produtoIndex++;
 				}
+				fileObject.close();
 			} else {
-				return null;
+				return list;
 			}
 		} catch (Exception e) {
 			System.out.println(e);
 		}
-		
 		return list;
 	}
 	
@@ -134,107 +129,111 @@ public class Pizzaria extends JFrame {
 		setResizable(true);
 		getContentPane().setLayout(new GridLayout(0, 2, 0, 0));
 		
+		
 		JPanel descontoLabel = new JPanel();
 		getContentPane().add(descontoLabel);
 		GridBagLayout gbl_descontoLabel = new GridBagLayout();
-		gbl_descontoLabel.columnWidths = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_descontoLabel.rowHeights = new int[]{0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0};
-		gbl_descontoLabel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 1.0, 1.0, 1.0, Double.MIN_VALUE};
-		gbl_descontoLabel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_descontoLabel.columnWidths = new int[]{204, 69, 60, 184, 0};
+		gbl_descontoLabel.rowHeights = new int[]{250, 20, 22, 20, 20, 35, 23, 0};
+		gbl_descontoLabel.columnWeights = new double[]{0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
+		gbl_descontoLabel.rowWeights = new double[]{0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, Double.MIN_VALUE};
 		descontoLabel.setLayout(gbl_descontoLabel);
 		
 		JLabel tipoLabel = DefaultComponentFactory.getInstance().createLabel("Tipo");
 		GridBagConstraints gbc_tipoLabel = new GridBagConstraints();
 		gbc_tipoLabel.insets = new Insets(0, 0, 5, 5);
-		gbc_tipoLabel.gridx = 5;
-		gbc_tipoLabel.gridy = 11;
+		gbc_tipoLabel.gridx = 1;
+		gbc_tipoLabel.gridy = 1;
 		descontoLabel.add(tipoLabel, gbc_tipoLabel);
 		
 		JComboBox<String> tipo = new JComboBox<String>(new String[]{"Pizza", "Sanduíche"});
 		GridBagConstraints gbc_tipo = new GridBagConstraints();
-		gbc_tipo.insets = new Insets(0, 0, 5, 5);
 		gbc_tipo.fill = GridBagConstraints.HORIZONTAL;
-		gbc_tipo.gridx = 6;
-		gbc_tipo.gridy = 11;
+		gbc_tipo.insets = new Insets(0, 0, 5, 0);
+		gbc_tipo.gridx = 3;
+		gbc_tipo.gridy = 1;
 		descontoLabel.add(tipo, gbc_tipo);
+		
 		
 		JLabel nomeLabel = DefaultComponentFactory.getInstance().createLabel("Nome");
 		GridBagConstraints gbc_nomeLabel = new GridBagConstraints();
 		gbc_nomeLabel.insets = new Insets(0, 0, 5, 5);
-		gbc_nomeLabel.gridx = 5;
-		gbc_nomeLabel.gridy = 12;
+		gbc_nomeLabel.gridx = 1;
+		gbc_nomeLabel.gridy = 2;
 		descontoLabel.add(nomeLabel, gbc_nomeLabel);
-		
+				
 		TextField nome = new TextField();
 		GridBagConstraints gbc_nome = new GridBagConstraints();
 		gbc_nome.fill = GridBagConstraints.HORIZONTAL;
-		gbc_nome.insets = new Insets(0, 0, 5, 5);
-		gbc_nome.gridx = 6;
-		gbc_nome.gridy = 12;
+		gbc_nome.insets = new Insets(0, 0, 5, 0);
+		gbc_nome.gridx = 3;
+		gbc_nome.gridy = 2;
 		descontoLabel.add(nome, gbc_nome);
+
 		
-		// Formato para valores
-		NumberFormat format = DecimalFormat.getInstance();
-		format.setMinimumFractionDigits(2);
-		format.setMaximumFractionDigits(2);
-		format.setRoundingMode(RoundingMode.HALF_UP);
-		
-		JLabel valorLabel = DefaultComponentFactory.getInstance().createLabel("Valor");
+		JLabel valorLabel = DefaultComponentFactory.getInstance().createLabel("Valor (R$)");
 		GridBagConstraints gbc_valorLabel = new GridBagConstraints();
 		gbc_valorLabel.insets = new Insets(0, 0, 5, 5);
-		gbc_valorLabel.gridx = 5;
-		gbc_valorLabel.gridy = 13;
+		gbc_valorLabel.gridx = 1;
+		gbc_valorLabel.gridy = 3;
 		descontoLabel.add(valorLabel, gbc_valorLabel);
 		
-		JFormattedTextField valor = new JFormattedTextField(format);
+		JFormattedTextField valor = new JFormattedTextField(Double.valueOf(0));
 		GridBagConstraints gbc_valor = new GridBagConstraints();
 		gbc_valor.fill = GridBagConstraints.HORIZONTAL;
-		gbc_valor.insets = new Insets(0, 0, 5, 5);
-		gbc_valor.gridx = 6;
-		gbc_valor.gridy = 13;
+		gbc_valor.insets = new Insets(0, 0, 5, 0);
+		gbc_valor.gridx = 3;
+		gbc_valor.gridy = 3;
 		descontoLabel.add(valor, gbc_valor);
 		
-		JLabel lblNewJgoodiesLabel_3 = DefaultComponentFactory.getInstance().createLabel("Desconto");
+		valor.setFormatterFactory(setFormat);
+		
+				
+		JLabel lblNewJgoodiesLabel_3 = DefaultComponentFactory.getInstance().createLabel("Desconto (R$)");
 		GridBagConstraints gbc_lblNewJgoodiesLabel_3 = new GridBagConstraints();
 		gbc_lblNewJgoodiesLabel_3.insets = new Insets(0, 0, 5, 5);
-		gbc_lblNewJgoodiesLabel_3.gridx = 5;
-		gbc_lblNewJgoodiesLabel_3.gridy = 14;
+		gbc_lblNewJgoodiesLabel_3.gridx = 1;
+		gbc_lblNewJgoodiesLabel_3.gridy = 4;
 		descontoLabel.add(lblNewJgoodiesLabel_3, gbc_lblNewJgoodiesLabel_3);
 		
-		JFormattedTextField desconto = new JFormattedTextField(format);
+		JFormattedTextField desconto = new JFormattedTextField(Double.valueOf(0));
 		GridBagConstraints gbc_desconto = new GridBagConstraints();
 		gbc_desconto.fill = GridBagConstraints.HORIZONTAL;
-		gbc_desconto.insets = new Insets(0, 0, 5, 5);
-		gbc_desconto.gridx = 6;
-		gbc_desconto.gridy = 14;
+		gbc_desconto.insets = new Insets(0, 0, 5, 0);
+		gbc_desconto.gridx = 3;
+		gbc_desconto.gridy = 4;
 		descontoLabel.add(desconto, gbc_desconto);
 		
+		desconto.setFormatterFactory(setFormat);
+		
+				
 		JButton botaoSalvar = new JButton("Salvar");
 		GridBagConstraints gbc_botaoSalvar = new GridBagConstraints();
-		gbc_botaoSalvar.insets = new Insets(0, 0, 0, 5);
-		gbc_botaoSalvar.gridx = 6;
-		gbc_botaoSalvar.gridy = 16;
+		gbc_botaoSalvar.gridx = 3;
+		gbc_botaoSalvar.gridy = 6;
 		descontoLabel.add(botaoSalvar, gbc_botaoSalvar);
 		
 		botaoSalvar.addActionListener(new ActionListener() {
-
 		    @Override
 		    public void actionPerformed(ActionEvent e) {
-		    	ArrayList<Produto> produtos = new ArrayList<Produto>();
+				String regex = "[.,]";
+		    	String valorString = valor.getText().split(",")[0].replaceAll(regex, "");
+		    	String descontoString = desconto.getText().split(",")[0].replaceAll(regex, "");
 		    	
 		    	String tipoProduto = tipo.getSelectedItem().toString();
 		    	String nomeProduto = nome.getText();
-		    	int valorProduto = Integer.parseInt(valor.getText());
-		    	int descontoProduto = Integer.parseInt(desconto.getText());
+		    	int valorProduto = (int) Double.parseDouble(valorString);
+		    	int descontoProduto = (int) Double.parseDouble(descontoString);
 		    	
 		    	switch(tipoProduto) {
 		    		case "Pizza":
 		    			Produto produto = new Pizza(tipoProduto, nomeProduto, valorProduto, descontoProduto, null);
-		    			produtos.add(produto);
-		    			salvarProdutos(produtos);
+		    			salvarProdutos(verificarArquivoProdutos("produtos.txt", produto));
+		    			break;
 		    	}
 		    }
 		});
+		
 		
 		JScrollPane scrollPane = new JScrollPane();
 		getContentPane().add(scrollPane);
@@ -242,9 +241,12 @@ public class Pizzaria extends JFrame {
 		String[][] data = listarProdutos();
 		String[] columnNames = { "Tipo", "Nome", "Valor", "Desconto" };
 		table = new JTable(data, columnNames);
+		CustomTableCellRenderer customTable = new CustomTableCellRenderer();
+		table.getColumnModel().getColumn(2).setCellRenderer(customTable);
+		table.getColumnModel().getColumn(3).setCellRenderer(customTable);
 		table.setFillsViewportHeight(true);
 		scrollPane.setViewportView(table);
-		
+
 	}
 	
 	public static void main(String[] args) {
