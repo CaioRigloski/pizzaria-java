@@ -158,12 +158,13 @@ public class Pizzaria extends JFrame {
                 int i=JOptionPane.showConfirmDialog(null, "Deseja realmente sair?");
                 if(i==0) {
                 	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-                	System.exit(0); // Encerra a aplicação.                	
+                	System.exit(0); // Encerra a aplicação.
                 } else {
-                	setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);      	
+                	setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
                 }
             }
         });
+		
 		JPanel descontoLabel = new JPanel();
 		getContentPane().add(descontoLabel);
 		GridBagLayout gbl_descontoLabel = new GridBagLayout();
