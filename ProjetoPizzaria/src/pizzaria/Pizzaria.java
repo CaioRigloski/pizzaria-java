@@ -3,6 +3,8 @@ package pizzaria;
 import java.awt.TextField;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.beans.PropertyChangeListener;
 import java.io.File;
 import java.io.FileInputStream;
@@ -18,6 +20,7 @@ import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
 import javax.swing.table.DefaultTableModel;
@@ -150,7 +153,17 @@ public class Pizzaria extends JFrame {
 		setResizable(true);
 		getContentPane().setLayout(new GridLayout(0, 2, 0, 0));
 		
-		
+		this.addWindowListener(new WindowAdapter(){
+            public void windowClosing(WindowEvent e){
+                int i=JOptionPane.showConfirmDialog(null, "Deseja realmente sair?");
+                if(i==0) {
+                	setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+                	System.exit(0); // Encerra a aplicação.                	
+                } else {
+                	setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);      	
+                }
+            }
+        });
 		JPanel descontoLabel = new JPanel();
 		getContentPane().add(descontoLabel);
 		GridBagLayout gbl_descontoLabel = new GridBagLayout();
