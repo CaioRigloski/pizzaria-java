@@ -29,6 +29,41 @@ public abstract class Produto implements Serializable{
 		return array;
 	}
 	
+	public String getTipo() {
+		return this.tipo;
+	}
+	
+	public void setTipo(String newTipo) {
+		tipo = newTipo;
+	}
+	
+	
+	public String getNome() {
+		return this.nome;
+	}
+	
+	public void setNome(String newNome) {
+		nome = newNome;
+	}
+	
+	
+	public int getValor() {
+		return this.valor;
+	}
+	
+	public void setValor(int newValor) {
+		valor = newValor;
+	}
+	
+	
+	public int getDesconto() {
+		return this.desconto;
+	}
+	
+	public void setDesconto(int newDesconto) {
+		desconto = newDesconto;
+	}
+	
 	public Produto(String tipo, String nome, int valor, int desconto) {
 		this.tipo = tipo;
 		this.nome = nome;

@@ -14,12 +14,15 @@ import java.text.DecimalFormat;
 import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.Locale;
+import java.util.Vector;
 
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 import javax.swing.text.InternationalFormatter;
 
 import com.jgoodies.forms.factories.DefaultComponentFactory;
@@ -45,9 +48,25 @@ public class Pizzaria extends JFrame {
 	// Formato para valores
 	setFormatterFactory setFormat = new setFormatterFactory();
 	
+	
+	/**
+	 * Adiciona o produto dinamicamente ao JTable.
+	 * @param produto o objeto da classe Produto.
+	 * @param table a JTable a ser alterada.
+	 */
+	public void adicionarLinhaProduto(JTable table, Produto produto) {
+		String tipo = produto.getTipo();
+		String nome = produto.getNome();
+		String valor = String.valueOf(produto.getValor());
+		String desconto = String.valueOf(produto.getDesconto());
+		
+		DefaultTableModel model = (DefaultTableModel) table.getModel();
+		model.addRow(new Object[] {tipo, nome, valor, desconto});
+	}
+	
 	/**
 	 * Salva o ArrayList de Produto em um arquivo txt.
-	 * @param produtos  o ArrayList de Produto.
+	 * @param produtos o ArrayList de Produto.
 	 */
 	public void salvarProdutos(ArrayList<Produto> produtos) {
 		try {
@@ -92,13 +111,15 @@ public class Pizzaria extends JFrame {
 	 * @return o String Array 2D.
 	 */
 	public String[][] listarProdutos() {
-		String[][] list = new String[100][5];
+		String[][] list = new String[0][5];
 		
 		try {
 			File file = new File("c:\\\\temp\\\\produtos.txt");
 			if(file.exists()) {
 				ObjectInputStream fileObject = new ObjectInputStream(new FileInputStream("c:\\\\temp\\\\produtos.txt"));
 				ArrayList<Produto> fileList = ((ArrayList<Produto>) fileObject.readObject());
+				
+				list = new String[fileList.size()][5];
 				
 				int produtoIndex = 0;
 				for(Produto produto: fileList) {
@@ -228,6 +249,7 @@ public class Pizzaria extends JFrame {
 		    	switch(tipoProduto) {
 		    		case "Pizza":
 		    			Produto produto = new Pizza(tipoProduto, nomeProduto, valorProduto, descontoProduto, null);
+		    			adicionarLinhaProduto(table, produto);
 		    			salvarProdutos(verificarArquivoProdutos("produtos.txt", produto));
 		    			break;
 		    	}
@@ -240,13 +262,19 @@ public class Pizzaria extends JFrame {
 		
 		String[][] data = listarProdutos();
 		String[] columnNames = { "Tipo", "Nome", "Valor", "Desconto" };
-		table = new JTable(data, columnNames);
+		table = new JTable();
+		
+		DefaultTableModel model = new DefaultTableModel(data, columnNames);
+		model.setColumnIdentifiers(columnNames);
+		table.setModel(model);
+		
 		CustomTableCellRenderer customTable = new CustomTableCellRenderer();
 		table.getColumnModel().getColumn(2).setCellRenderer(customTable);
 		table.getColumnModel().getColumn(3).setCellRenderer(customTable);
+		
 		table.setFillsViewportHeight(true);
 		scrollPane.setViewportView(table);
-
+		
 	}
 	
 	public static void main(String[] args) {
