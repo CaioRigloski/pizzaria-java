@@ -6,6 +6,7 @@ import java.util.ArrayList;
 public abstract class Produto implements Serializable{
 	private static final long serialVersionUID = 1L;
 	
+	private final int uniqueId;
 	private String tipo;
 	private String nome;
 	private int valor;
@@ -18,9 +19,11 @@ public abstract class Produto implements Serializable{
 	 */
 	public ArrayList<String> getArray() {
 		ArrayList<String> array = new ArrayList<String>();
+		String index = String.valueOf(uniqueId);
 		String val = String.valueOf(valor);
 		String desc = String.valueOf(desconto);
 		
+		array.add(index);
 		array.add(this.tipo);
 		array.add(this.nome);
 		array.add(val);
@@ -28,6 +31,11 @@ public abstract class Produto implements Serializable{
 		
 		return array;
 	}
+	
+	public int getId() {
+		return this.uniqueId;
+	}
+	
 	
 	public String getTipo() {
 		return this.tipo;
@@ -64,7 +72,8 @@ public abstract class Produto implements Serializable{
 		desconto = newDesconto;
 	}
 	
-	public Produto(String tipo, String nome, int valor, int desconto) {
+	public Produto(int uniqueId, String tipo, String nome, int valor, int desconto) {
+		this.uniqueId = uniqueId;
 		this.tipo = tipo;
 		this.nome = nome;
 		this.valor = valor;

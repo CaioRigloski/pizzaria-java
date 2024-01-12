@@ -17,7 +17,7 @@ public class CustomTableCellRenderer extends DefaultTableCellRenderer {
     public Component getTableCellRendererComponent(JTable table, Object value, boolean isSelected, boolean hasFocus, int row, int column) {
         Component c = super.getTableCellRendererComponent(table, value, isSelected, hasFocus, row, column);
 
-        if(column == 2 || column == 3) {
+        if(column == 3 || column == 4) {
         	if(value != null) {
         		value = Double.parseDouble((String) value);
         		setValue(value);

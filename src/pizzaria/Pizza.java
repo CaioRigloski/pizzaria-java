@@ -1,5 +1,6 @@
 package pizzaria;
 
+
 public class Pizza extends Produto {
 	private static final long serialVersionUID = 1L;
 	private String ingredientes;
@@ -11,8 +12,8 @@ public class Pizza extends Produto {
 		return this.ingredientes = ingredientes;
 	}
 	
-	public Pizza(String tipo, String nome, int valor, int desconto, String ingredientes) {
-		super(tipo, nome, valor, desconto);
+	public Pizza(int uniqueId, String tipo, String nome, int valor, int desconto, String ingredientes) {
+		super(uniqueId, tipo, nome, valor, desconto);
 		
 		setIngredientes(ingredientes);
 	}
