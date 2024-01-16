@@ -18,6 +18,10 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 import javax.swing.UIManager;
+import javax.swing.event.CellEditorListener;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.TableModelEvent;
+import javax.swing.event.TableModelListener;
 import javax.swing.table.DefaultTableModel;
 
 import com.jgoodies.forms.factories.DefaultComponentFactory;
@@ -25,11 +29,15 @@ import javax.swing.JScrollPane;
 import javax.swing.JPanel;
 import java.awt.GridBagLayout;
 import java.awt.GridBagConstraints;
+
+import javax.swing.AbstractAction;
+import javax.swing.Action;
 import javax.swing.JButton;
 import java.awt.Insets;
 import javax.swing.JTable;
 import javax.swing.JComboBox;
 import javax.swing.JFormattedTextField;
+
 
 
 public class Pizzaria extends JFrame {
@@ -120,6 +128,41 @@ public class Pizzaria extends JFrame {
 		}
 	};
 	
+	public void editarProduto(String columnName, int id, String newValue) {
+		ArrayList<Produto> list = verificarArquivoProdutos();
+		try {
+			Iterator<Produto> i = list.iterator();
+			while(i.hasNext()) {
+				Produto produto = (Produto) i.next();
+				if(produto.getId() == id) {
+					switch(columnName) {
+						case "Tipo": {
+							produto.setTipo(newValue);
+							break;
+						}
+						case "Nome": {
+							produto.setNome(newValue);
+							break;
+						}
+						case "Valor": {
+							produto.setValor(Integer.valueOf(newValue));
+							break;
+						}
+						case "Desconto": {
+							produto.setDesconto(Integer.valueOf(newValue));
+							break;
+						}
+					}
+				}
+			}
+		
+		salvarListaProdutos(list);
+		System.out.println("Produto editado com sucesso!");
+		} catch (Exception e){
+			System.out.println(e);
+		}
+	}
+	
 	/**
 	 * Remove o produto da lista retirada do arquivo de produtos com base no ID.
 	 * @param row o índice da linha.
@@ -128,22 +171,23 @@ public class Pizzaria extends JFrame {
 	public void excluirProduto(int row, int id) {
 		ArrayList<Produto> list = verificarArquivoProdutos();
 		try {
-			Iterator<Produto> i = list.iterator();
-			
-			while(i.hasNext()) {
-				Produto produto = (Produto) i.next();
-				if(produto.getId() == id) {
-					i.remove();
+			if(list.size() > 0) {
+				Iterator<Produto> i = list.iterator();
+				
+				while(i.hasNext()) {
+					Produto produto = (Produto) i.next();
+					if(produto.getId() == id) {
+						i.remove();
+					}
 				}
+				
+				removerLinhaProduto(row);
+				salvarListaProdutos(list);
+				System.out.println("Produto excluído com sucesso!");
 			}
-			
-			removerLinhaProduto(row);
-			System.out.println("Produto excluído com sucesso!");
 		} catch (Exception e){
 			System.out.println(e);
 		}
-		
-		salvarListaProdutos(list);
 	}
 	
 	/**
@@ -375,7 +419,6 @@ public class Pizzaria extends JFrame {
 		gbc_botaoSalvarEdicoes.gridy = 1;
 		panel.add(botaoSalvarEdicoes, gbc_botaoSalvarEdicoes);
 		
-		
 		JButton botaoExcluir = new JButton("Excluir");
 		
 		botaoExcluir.addActionListener(new ActionListener() {
@@ -383,7 +426,7 @@ public class Pizzaria extends JFrame {
 				int column = 0;
 				int row = table.getSelectedRow();
 				int id = Integer.valueOf(table.getModel().getValueAt(row, column).toString());
-	
+				
 				excluirProduto(row, id);
 			}
 		});
@@ -407,7 +450,25 @@ public class Pizzaria extends JFrame {
 		table.setFillsViewportHeight(true);
 		scrollPane.setViewportView(table);
 		
-		
+		table.getModel().addTableModelListener(new TableModelListener(){
+			@Override
+			public void tableChanged(TableModelEvent tableModelEvent) {
+				int rowCount = table.getModel().getRowCount();
+				int firtRowIndex = tableModelEvent.getFirstRow();
+				
+				if(rowCount > 0 && rowCount < firtRowIndex) {
+					int row = tableModelEvent.getFirstRow();
+					int column = tableModelEvent.getColumn();
+					int id =  Integer.valueOf(table.getModel().getValueAt(row, 0).toString());
+					
+					if(table.isEditing()) {
+						String value = table.getValueAt(row, column).toString();
+						editarProduto(table.getColumnName(column), id, value);
+					}					
+				}
+			}
+		});
+
 	}
 	
 	public static void main(String[] args) {
